@@ -6,6 +6,9 @@ interface POITableProps {
 }
 
 function POITable({ pois, loading }: POITableProps) {
+  const userRole = localStorage.getItem('role');
+  const isGuest = userRole === 'guest';
+
   if (loading) {
     return (
       <div className="bg-white rounded-lg shadow-md p-6">
@@ -73,7 +76,9 @@ function POITable({ pois, loading }: POITableProps) {
                   {poi.sub_category || 'N/A'}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                  {poi.dma || 'N/A'}
+                  <span className={isGuest ? 'blur-sm select-none' : ''}>
+                    {poi.dma || 'N/A'}
+                  </span>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                   {poi.city || 'N/A'}
