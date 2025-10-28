@@ -13,22 +13,10 @@ function App() {
             <div className="flex justify-between h-16">
               <div className="flex space-x-8">
                 <Link 
-                  to="/" 
-                  className="inline-flex items-center px-1 pt-1 text-gray-900 font-semibold border-b-2 border-transparent hover:border-blue-500"
-                >
-                  Home
-                </Link>
-                <Link 
                   to="/pois" 
                   className="inline-flex items-center px-1 pt-1 text-gray-900 font-semibold border-b-2 border-transparent hover:border-blue-500"
                 >
                   POIs
-                </Link>
-                <Link 
-                  to="/users" 
-                  className="inline-flex items-center px-1 pt-1 text-gray-900 font-semibold border-b-2 border-transparent hover:border-blue-500"
-                >
-                  Users
                 </Link>
               </div>
             </div>
