@@ -1,9 +1,11 @@
 import { useState, useEffect } from 'react';
+import AutocompleteSearch from '../components/AutocompleteSearch';
 import POIFilters from '../components/POIFilters';
 import POITable from '../components/POITable';
 import Pagination from '../components/Pagination';
 import { poisAPI } from '../services/api';
 import type { POI } from '../types/poi.types';
+import type { SelectedFilter } from '../types/autocomplete.types';
 
 function POIs() {
   const [pois, setPois] = useState<POI[]>([]);
@@ -23,25 +25,55 @@ function POIs() {
     is_open: true,
   });
   
+  // Autocomplete selected filters
+  const [selectedFilters, setSelectedFilters] = useState<SelectedFilter[]>([]);
+  
   // Filter options (extracted from data)
   const [chains, setChains] = useState<string[]>([]);
   const [dmas, setDmas] = useState<string[]>([]);
   const [categories, setCategories] = useState<string[]>([]);
 
   // Fetch POIs
-  const fetchPOIs = async (page: number, currentFilters: typeof filters) => {
+  const fetchPOIs = async (page: number, currentFilters: typeof filters, autocompleteFilters: SelectedFilter[]) => {
     try {
       setLoading(true);
       setError(null);
       
-      const response = await poisAPI.getPOIs({
+      // Combine manual filters with autocomplete filters
+      const combinedFilters: any = {
         page,
         limit,
-        chain_name: currentFilters.chain_name,
-        dma: currentFilters.dma,
-        category: currentFilters.category,
         is_open: currentFilters.is_open,
+      };
+      
+      // Add manual filters if not "All"
+      if (currentFilters.chain_name !== 'All') {
+        combinedFilters.chain_name = currentFilters.chain_name;
+      }
+      if (currentFilters.dma !== 'All') {
+        combinedFilters.dma = currentFilters.dma;
+      }
+      if (currentFilters.category !== 'All') {
+        combinedFilters.category = currentFilters.category;
+      }
+      
+      // Group autocomplete filters by field
+      const grouped: Record<string, string[]> = {};
+      autocompleteFilters.forEach(filter => {
+        if (!grouped[filter.field]) {
+          grouped[filter.field] = [];
+        }
+        grouped[filter.field].push(filter.value);
       });
+      
+      // Add grouped autocomplete filters to combined filters
+      Object.keys(grouped).forEach(field => {
+        combinedFilters[field] = grouped[field];
+      });
+      
+      console.log('Sending filters to API:', combinedFilters);
+      
+      const response = await poisAPI.getPOIs(combinedFilters);
       
       setPois(response.data);
       setCurrentPage(response.pagination.page);
@@ -69,20 +101,33 @@ function POIs() {
   // Initial load
   useEffect(() => {
     fetchFilterOptions();
-    fetchPOIs(1, filters);
+    fetchPOIs(1, filters, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // Handle autocomplete filter add
+  const handleAddFilter = (filter: SelectedFilter) => {
+    setSelectedFilters(prev => [...prev, filter]);
+  };
+
+  // Handle autocomplete filter remove
+  const handleRemoveFilter = (filterToRemove: SelectedFilter) => {
+    setSelectedFilters(prev => 
+      prev.filter(f => !(f.field === filterToRemove.field && f.value === filterToRemove.value))
+    );
+  };
 
   // Handle search
   const handleSearch = (newFilters: typeof filters) => {
     setFilters(newFilters);
     setCurrentPage(1);
-    fetchPOIs(1, newFilters);
+    fetchPOIs(1, newFilters, selectedFilters);
   };
 
   // Handle page change
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
-    fetchPOIs(page, filters);
+    fetchPOIs(page, filters, selectedFilters);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
@@ -100,6 +145,12 @@ function POIs() {
   return (
     <div>
       <h1 className="text-3xl font-bold text-gray-900 mb-6">Points of Interest</h1>
+      
+      <AutocompleteSearch
+        selectedFilters={selectedFilters}
+        onAddFilter={handleAddFilter}
+        onRemoveFilter={handleRemoveFilter}
+      />
       
       <POIFilters
         onSearch={handleSearch}
