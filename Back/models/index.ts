@@ -1,10 +1,12 @@
 import sequelize from '../config/database';
 import User from './User';
+import POI from './POI';
 
 // Database instance and models
 const db = {
   sequelize,
   User,
+  POI,
 };
 
 // Test connection
