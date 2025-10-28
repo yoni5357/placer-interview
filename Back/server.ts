@@ -3,6 +3,7 @@ import cors from 'cors';
 import { connectDB } from './models';
 import usersRouter from './routers/usersRouter';
 import poisRouter from './routers/poisRouter';
+import authRouter from './routers/authRouter';
 
 const server = express();
 
@@ -11,6 +12,7 @@ server.use(express.json());
 server.use(cors({ origin: ['http://localhost:5173', 'http://localhost:5174'] }));
 
 // Routers
+server.use('/api/auth', authRouter);
 server.use('/api/users', usersRouter);
 server.use('/api/pois', poisRouter);
 
