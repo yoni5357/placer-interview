@@ -1,6 +1,4 @@
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
-import Home from './pages/Home';
-import Users from './pages/Users';
 import POIs from './pages/POIs';
 
 function App() {
@@ -26,9 +24,7 @@ function App() {
         {/* Routes */}
         <main className="max-w-7xl mx-auto py-6 px-4">
           <Routes>
-            <Route path="/" element={<Home />} />
             <Route path="/pois" element={<POIs />} />
-            <Route path="/users" element={<Users />} />
           </Routes>
         </main>
       </div>
