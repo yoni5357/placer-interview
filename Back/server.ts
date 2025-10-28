@@ -8,7 +8,7 @@ const server = express();
 
 // Middlewares
 server.use(express.json());
-server.use(cors({ origin: 'http://localhost:5173' }));
+server.use(cors({ origin: ['http://localhost:5173', 'http://localhost:5174'] }));
 
 // Routers
 server.use('/api/users', usersRouter);

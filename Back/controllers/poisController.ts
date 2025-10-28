@@ -76,3 +76,46 @@ export async function getPOIs(req: Request, res: Response) {
     res.status(500).json({ error: 'Failed to fetch POIs' });
   }
 }
+
+export async function getFilterOptions(req: Request, res: Response) {
+  try {
+    // Get distinct chain names
+    const chains = await db.POI.findAll({
+      attributes: [[db.sequelize.fn('DISTINCT', db.sequelize.col('chain_name')), 'chain_name']],
+      where: {
+        chain_name: { [Op.not]: null }
+      },
+      order: [['chain_name', 'ASC']],
+      raw: true,
+    });
+
+    // Get distinct DMAs
+    const dmas = await db.POI.findAll({
+      attributes: [[db.sequelize.fn('DISTINCT', db.sequelize.col('dma')), 'dma']],
+      where: {
+        dma: { [Op.not]: null }
+      },
+      order: [['dma', 'ASC']],
+      raw: true,
+    });
+
+    // Get distinct categories
+    const categories = await db.POI.findAll({
+      attributes: [[db.sequelize.fn('DISTINCT', db.sequelize.col('sub_category')), 'sub_category']],
+      where: {
+        sub_category: { [Op.not]: null }
+      },
+      order: [['sub_category', 'ASC']],
+      raw: true,
+    });
+
+    res.json({
+      chains: chains.map((c: any) => c.chain_name),
+      dmas: dmas.map((d: any) => d.dma),
+      categories: categories.map((c: any) => c.sub_category),
+    });
+  } catch (error) {
+    console.error('Error fetching filter options:', error);
+    res.status(500).json({ error: 'Failed to fetch filter options' });
+  }
+}

@@ -1,6 +1,7 @@
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import Home from './pages/Home';
 import Users from './pages/Users';
+import POIs from './pages/POIs';
 
 function App() {
   return (
@@ -18,6 +19,12 @@ function App() {
                   Home
                 </Link>
                 <Link 
+                  to="/pois" 
+                  className="inline-flex items-center px-1 pt-1 text-gray-900 font-semibold border-b-2 border-transparent hover:border-blue-500"
+                >
+                  POIs
+                </Link>
+                <Link 
                   to="/users" 
                   className="inline-flex items-center px-1 pt-1 text-gray-900 font-semibold border-b-2 border-transparent hover:border-blue-500"
                 >
@@ -32,6 +39,7 @@ function App() {
         <main className="max-w-7xl mx-auto py-6 px-4">
           <Routes>
             <Route path="/" element={<Home />} />
+            <Route path="/pois" element={<POIs />} />
             <Route path="/users" element={<Users />} />
           </Routes>
         </main>
